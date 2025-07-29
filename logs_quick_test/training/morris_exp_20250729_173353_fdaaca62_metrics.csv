@@ -1,0 +1,5 @@
+timestamp,unix_time,experiment_id,step,loss,morris_bits
+2025-07-29T17:33:55.811821,1753824835.811848,morris_exp_20250729_173353_fdaaca62,50,0.6890259802341461,0.0
+2025-07-29T17:33:56.362383,1753824836.362391,morris_exp_20250729_173353_fdaaca62,100,0.6749605453014373,0.0
+2025-07-29T17:33:56.388482,1753824836.388488,morris_exp_20250729_173353_fdaaca62,100,0.0,0.0
+2025-07-29T17:33:56.389144,1753824836.3891468,"{'theoretical_entropy_bits': 3200.0, 'conditional_entropy_bits': 3267.5995700791013, 'morris_memorization_bits': 0.0, 'model_parameters': 27072, 'bits_per_parameter': 0.0, 'bits_per_token': 0.0, 'memorization_fraction': 0.0, 'total_tokens': 3200, 'dataset_size': 50, 'evaluation_device': 'mps', 'training_step': 100, 'timestamp': 1753824836.388472}",morris_exp_20250729_173353_fdaaca62

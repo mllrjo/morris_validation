@@ -1,0 +1,22 @@
+{
+  "experiment_id": "morris_exp_20250729_173607_ed44741b",
+  "timestamp": "2025-07-29T17:36:07.747566",
+  "created_at": 1753824967.747573,
+  "experiment_name": "single_model_demo",
+  "main_experiment_id": "morris_exp_20250729_173607_ed44741b",
+  "model_names": [
+    "nano"
+  ],
+  "dataset_sizes": [
+    200,
+    500
+  ],
+  "total_experiments": 2,
+  "base_config": {
+    "max_steps": 500,
+    "eval_interval": 50,
+    "memorization_eval_interval": 100,
+    "batch_size": 16,
+    "learning_rate": 0.001
+  }
+}

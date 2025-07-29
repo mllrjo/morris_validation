@@ -1,0 +1,40 @@
+{
+  "experiment_id": "morris_exp_20250729_173615_948ce21a",
+  "checkpoint_timestamp": "2025-07-29T17:36:20.546268",
+  "checkpoint_time": 1753824980.546277,
+  "state_version": "1.0",
+  "current_phase": "completed",
+  "model_name": "nano",
+  "dataset_size": 500,
+  "total_experiments": 2,
+  "experiment_number": 2,
+  "completed": true,
+  "final_results": {
+    "experiment_id": "morris_exp_20250729_173615_948ce21a",
+    "final_step": 500,
+    "model_config": {
+      "name": "nano",
+      "n_layers": 2,
+      "d_model": 32,
+      "n_heads": 2,
+      "vocab_size": 2,
+      "seq_length": 64,
+      "total_params": 27072
+    },
+    "final_memorization": {
+      "theoretical_entropy_bits": 6400.0,
+      "conditional_entropy_bits": 6318.591212538679,
+      "morris_memorization_bits": 81.40878746132057,
+      "model_parameters": 27072,
+      "bits_per_parameter": 0.0030071212862485437,
+      "bits_per_token": 0.01272012304083134,
+      "memorization_fraction": 0.01272012304083134,
+      "total_tokens": 6400,
+      "dataset_size": 100,
+      "evaluation_device": "mps"
+    },
+    "training_completed": true
+  },
+  "completion_timestamp": "2025-07-29T17:36:20.547035",
+  "completion_time": 1753824980.547039
+}

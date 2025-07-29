@@ -18,7 +18,8 @@ def run_tests():
         "test_checkpoint_manager.py",
         "test_data_generation.py",
         "test_model_architecture.py",
-        "test_memorization_metrics.py"
+        "test_memorization_metrics.py",
+        "test_training_loop.py"
     ]    
     
     all_passed = True

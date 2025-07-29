@@ -1,0 +1,40 @@
+{
+  "experiment_id": "morris_exp_20250729_174427_0ad23ab1",
+  "checkpoint_timestamp": "2025-07-29T17:45:41.215002",
+  "checkpoint_time": 1753825541.2150111,
+  "state_version": "1.0",
+  "current_phase": "completed",
+  "model_name": "mini",
+  "dataset_size": 2000,
+  "total_experiments": 4,
+  "experiment_number": 4,
+  "completed": true,
+  "final_results": {
+    "experiment_id": "morris_exp_20250729_174427_0ad23ab1",
+    "final_step": 2000,
+    "model_config": {
+      "name": "mini",
+      "n_layers": 6,
+      "d_model": 128,
+      "n_heads": 8,
+      "vocab_size": 2,
+      "seq_length": 64,
+      "total_params": 1191680
+    },
+    "final_memorization": {
+      "theoretical_entropy_bits": 6400.0,
+      "conditional_entropy_bits": 6302.692486886431,
+      "morris_memorization_bits": 97.30751311356926,
+      "model_parameters": 1191680,
+      "bits_per_parameter": 8.165574073037163e-05,
+      "bits_per_token": 0.015204298923995196,
+      "memorization_fraction": 0.015204298923995196,
+      "total_tokens": 6400,
+      "dataset_size": 100,
+      "evaluation_device": "mps"
+    },
+    "training_completed": true
+  },
+  "completion_timestamp": "2025-07-29T17:45:41.225724",
+  "completion_time": 1753825541.22573
+}

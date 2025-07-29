@@ -191,3 +191,181 @@ def memorization_efficiency_score(actual_memorization: float,
         Efficiency score (1.0 = perfect efficiency, >1.0 = above expected)
     """
     pass
+
+# =============================================================================
+# TRAINING_LOOP.PY
+# =============================================================================
+
+def create_training_config(
+    model_name: str = 'nano',
+    dataset_size: int = 1000,
+    seq_length: int = 64,
+    vocab_size: int = 2,
+    learning_rate: float = 1e-3,
+    batch_size: int = 32,
+    max_steps: int = 1000,
+    eval_interval: int = 100,
+    memorization_eval_interval: int = 200,
+    warmup_steps: int = 100,
+    weight_decay: float = 0.01,
+    grad_clip_norm: float = 1.0,
+    device: Optional[str] = None,
+    seed: int = 42,
+    save_checkpoint_interval: int = 500,
+    eval_dataset_size: int = 100
+) -> Dict[str, Any]:
+    """Create training configuration dictionary.
+    
+    Args:
+        model_name: Model size ('nano', 'micro', 'mini', 'small')
+        dataset_size: Number of training sequences
+        seq_length: Sequence length
+        vocab_size: Vocabulary size (2 for binary)
+        learning_rate: Initial learning rate
+        batch_size: Training batch size
+        max_steps: Maximum training steps
+        eval_interval: Steps between loss evaluations
+        memorization_eval_interval: Steps between memorization measurements
+        warmup_steps: Learning rate warmup steps
+        weight_decay: L2 regularization strength
+        grad_clip_norm: Gradient clipping norm
+        device: Device to use (auto-detect if None)
+        seed: Random seed for reproducibility
+        save_checkpoint_interval: Steps between model checkpoints
+        eval_dataset_size: Size of evaluation dataset
+        
+    Returns:
+        Complete training configuration dictionary
+    """
+    pass
+
+def create_dataloader(dataset: torch.Tensor, batch_size: int, 
+                     shuffle: bool = True, device: str = 'cpu') -> torch.utils.data.DataLoader:
+    """Create DataLoader for training dataset.
+    
+    Args:
+        dataset: Dataset tensor of shape (n_sequences, seq_length)
+        batch_size: Batch size
+        shuffle: Whether to shuffle data
+        device: Device for data loading
+        
+    Returns:
+        DataLoader for the dataset
+    """
+    pass
+
+def compute_learning_rate(step: int, max_lr: float, warmup_steps: int, 
+                         max_steps: int) -> float:
+    """Compute learning rate with warmup and cosine decay.
+    
+    Args:
+        step: Current training step
+        max_lr: Maximum learning rate
+        warmup_steps: Number of warmup steps
+        max_steps: Total training steps
+        
+    Returns:
+        Current learning rate
+    """
+    pass
+
+def train_model_with_memorization_tracking(
+    config: Dict[str, Any],
+    experiment_id: str,
+    log_dirs: Dict[str, Path],
+    train_dataset: torch.Tensor,
+    train_metadata: Dict[str, Any],
+    eval_dataset: torch.Tensor,
+    eval_metadata: Dict[str, Any],
+    resume_from_step: int = 0
+) -> Dict[str, Any]:
+    """Train model with comprehensive memorization tracking.
+    
+    Args:
+        config: Training configuration
+        experiment_id: Unique experiment identifier
+        log_dirs: Logging directory paths
+        train_dataset: Training dataset tensor
+        train_metadata: Training dataset metadata
+        eval_dataset: Evaluation dataset tensor
+        eval_metadata: Evaluation dataset metadata
+        resume_from_step: Step to resume from (0 for new training)
+        
+    Returns:
+        Training results and final metrics
+    """
+    pass
+
+def run_morris_validation_experiment(
+    experiment_name: str = "morris_validation",
+    model_names: List[str] = ['nano', 'micro', 'mini'],
+    dataset_sizes: List[int] = [500, 1000, 2000],
+    base_config_overrides: Optional[Dict[str, Any]] = None,
+    log_base_dir: Path = Path("logs"),
+    cache_dir: Optional[Path] = Path("data_cache"),
+    resume_incomplete: bool = True
+) -> Dict[str, Any]:
+    """Run complete Morris validation experiment across model sizes.
+    
+    Args:
+        experiment_name: Name for the experiment suite
+        model_names: List of model sizes to test
+        dataset_sizes: List of dataset sizes to test
+        base_config_overrides: Override default config parameters
+        log_base_dir: Base directory for logs
+        cache_dir: Directory for dataset caching
+        resume_incomplete: Whether to resume incomplete experiments
+        
+    Returns:
+        Complete experimental results and analysis
+    """
+    pass
+
+def analyze_morris_scaling_law(results: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Analyze results to validate Morris 3.6 bits-per-parameter scaling law.
+    
+    Args:
+        results: List of experimental results
+        
+    Returns:
+        Morris scaling law analysis
+    """
+    pass
+
+def resume_training_from_checkpoint(experiment_id: str, 
+                                  log_base_dir: Path = Path("logs")) -> bool:
+    """Resume training from an existing checkpoint.
+    
+    Args:
+        experiment_id: Experiment to resume
+        log_base_dir: Base directory for logs
+        
+    Returns:
+        Success flag
+    """
+    pass
+
+def validate_morris_scaling_law(results_file: Path) -> Dict[str, Any]:
+    """Validate Morris scaling law from saved experimental results.
+    
+    Args:
+        results_file: Path to saved experimental results JSON
+        
+    Returns:
+        Validation analysis
+    """
+    pass
+
+def quick_morris_test(model_name: str = 'nano', dataset_size: int = 100, 
+                     max_steps: int = 200) -> Dict[str, Any]:
+    """Run a quick Morris validation test for development/debugging.
+    
+    Args:
+        model_name: Model size to test
+        dataset_size: Size of dataset
+        max_steps: Number of training steps
+        
+    Returns:
+        Quick test results
+    """
+    pass

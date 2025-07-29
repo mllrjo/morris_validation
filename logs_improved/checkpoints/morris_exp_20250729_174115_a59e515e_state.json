@@ -1,0 +1,40 @@
+{
+  "experiment_id": "morris_exp_20250729_174115_a59e515e",
+  "checkpoint_timestamp": "2025-07-29T17:42:36.370371",
+  "checkpoint_time": 1753825356.370379,
+  "state_version": "1.0",
+  "current_phase": "completed",
+  "model_name": "micro",
+  "dataset_size": 1000,
+  "total_experiments": 4,
+  "experiment_number": 1,
+  "completed": true,
+  "final_results": {
+    "experiment_id": "morris_exp_20250729_174115_a59e515e",
+    "final_step": 2000,
+    "model_config": {
+      "name": "micro",
+      "n_layers": 4,
+      "d_model": 64,
+      "n_heads": 4,
+      "vocab_size": 2,
+      "seq_length": 64,
+      "total_params": 202112
+    },
+    "final_memorization": {
+      "theoretical_entropy_bits": 6400.0,
+      "conditional_entropy_bits": 6323.70228376386,
+      "morris_memorization_bits": 76.29771623614033,
+      "model_parameters": 202112,
+      "bits_per_parameter": 0.0003775021583881231,
+      "bits_per_token": 0.011921518161896927,
+      "memorization_fraction": 0.011921518161896927,
+      "total_tokens": 6400,
+      "dataset_size": 100,
+      "evaluation_device": "mps"
+    },
+    "training_completed": true
+  },
+  "completion_timestamp": "2025-07-29T17:42:36.378053",
+  "completion_time": 1753825356.37806
+}

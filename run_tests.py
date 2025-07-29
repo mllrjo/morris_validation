@@ -16,7 +16,9 @@ def run_tests():
     # Test files to run
     test_files = [
         "test_logging_utils.py",
-        "test_checkpoint_manager.py"
+        "test_checkpoint_manager.py",
+        "test_data_generation.py",
+        "test_model_architecture.py"
     ]
     
     all_passed = True

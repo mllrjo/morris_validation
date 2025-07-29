@@ -262,14 +262,14 @@ def get_model_config(n_layers: int, d_model: int, n_heads: int,
     Returns:
         Configuration dictionary
     """
-    # Create temporary model to get parameter count
+    # Create temporary model to get parameter count (force CPU for config generation)
     temp_model = GPTModel(
         vocab_size=vocab_size,
         seq_length=seq_length,
         d_model=d_model,
         n_layers=n_layers,
         n_heads=n_heads
-    )
+    ).to('cpu')
     
     config = {
         'architecture': {
@@ -368,6 +368,7 @@ def create_model_family(base_config: Dict[str, Any],
             'n_layers': max(1, int(base_config['n_layers'] * scale_factor)),
         })
         
+        # Use get_model_config which now forces CPU
         model_family[model_name] = get_model_config(
             n_layers=scaled_config['n_layers'],
             d_model=scaled_config['d_model'],

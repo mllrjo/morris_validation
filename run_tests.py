@@ -12,14 +12,14 @@ def run_tests():
     if not test_dir.exists():
         print("Error: tests directory not found")
         return False
-    
     # Test files to run
     test_files = [
         "test_logging_utils.py",
         "test_checkpoint_manager.py",
         "test_data_generation.py",
-        "test_model_architecture.py"
-    ]
+        "test_model_architecture.py",
+        "test_memorization_metrics.py"
+    ]    
     
     all_passed = True
     

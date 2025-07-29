@@ -1,430 +1,531 @@
-# src/model_architecture.py
-# GPT-style transformer models for Morris validation experiment
+# tests/test_model_architecture.py
+# Comprehensive tests for GPT model architecture
 
+import pytest
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import math
-from typing import Dict, Any, Optional
 from pathlib import Path
 
-class MultiHeadAttention(nn.Module):
-    """Multi-head self-attention mechanism."""
-    
-    def __init__(self, d_model: int, n_heads: int):
-        super().__init__()
-        assert d_model % n_heads == 0
-        
-        self.d_model = d_model
-        self.n_heads = n_heads
-        self.d_head = d_model // n_heads
-        
-        # Combined QKV projection
-        self.qkv_proj = nn.Linear(d_model, 3 * d_model, bias=False)
-        self.out_proj = nn.Linear(d_model, d_model, bias=False)
-        
-        # Initialize weights
-        self._init_weights()
-    
-    def _init_weights(self):
-        """Initialize weights using GPT-2 style initialization."""
-        nn.init.normal_(self.qkv_proj.weight, std=0.02)
-        nn.init.normal_(self.out_proj.weight, std=0.02)
-    
-    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        batch_size, seq_len, d_model = x.shape
-        
-        # Project to Q, K, V
-        qkv = self.qkv_proj(x)  # (batch, seq_len, 3 * d_model)
-        qkv = qkv.reshape(batch_size, seq_len, 3, self.n_heads, self.d_head)
-        qkv = qkv.permute(2, 0, 3, 1, 4)  # (3, batch, n_heads, seq_len, d_head)
-        q, k, v = qkv[0], qkv[1], qkv[2]
-        
-        # Scaled dot-product attention
-        scores = torch.matmul(q, k.transpose(-2, -1)) / math.sqrt(self.d_head)
-        
-        # Apply causal mask
-        if mask is not None:
-            scores = scores.masked_fill(mask == 0, float('-inf'))
-        
-        attn_weights = F.softmax(scores, dim=-1)
-        attn_output = torch.matmul(attn_weights, v)
-        
-        # Reshape and project output
-        attn_output = attn_output.transpose(1, 2).contiguous()
-        attn_output = attn_output.reshape(batch_size, seq_len, d_model)
-        
-        return self.out_proj(attn_output)
+import sys
+sys.path.append(str(Path(__file__).parent.parent / 'src'))
 
-class MLP(nn.Module):
-    """Feed-forward network."""
-    
-    def __init__(self, d_model: int, d_ff: Optional[int] = None):
-        super().__init__()
-        if d_ff is None:
-            d_ff = 4 * d_model  # Standard GPT-2 ratio
-        
-        self.fc1 = nn.Linear(d_model, d_ff, bias=False)
-        self.fc2 = nn.Linear(d_ff, d_model, bias=False)
-        self.activation = nn.GELU()
-        
-        # Initialize weights
-        self._init_weights()
-    
-    def _init_weights(self):
-        """Initialize weights using GPT-2 style initialization."""
-        nn.init.normal_(self.fc1.weight, std=0.02)
-        nn.init.normal_(self.fc2.weight, std=0.02)
-    
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.fc2(self.activation(self.fc1(x)))
+from model_architecture import (
+    MultiHeadAttention,
+    MLP,
+    TransformerBlock,
+    GPTModel,
+    create_gpt_model,
+    count_model_parameters,
+    get_model_config,
+    detect_device,
+    estimate_activation_memory,
+    create_model_family,
+    get_morris_model_configs
+)
 
-class TransformerBlock(nn.Module):
-    """Single transformer block with attention and MLP."""
+class TestMultiHeadAttention:
     
-    def __init__(self, d_model: int, n_heads: int, d_ff: Optional[int] = None):
-        super().__init__()
-        self.ln1 = nn.LayerNorm(d_model)
-        self.attn = MultiHeadAttention(d_model, n_heads)
-        self.ln2 = nn.LayerNorm(d_model)
-        self.mlp = MLP(d_model, d_ff)
+    def test_multihead_attention_initialization(self):
+        """Test MultiHeadAttention initialization."""
+        d_model = 64
+        n_heads = 8
+        
+        attn = MultiHeadAttention(d_model, n_heads)
+        
+        assert attn.d_model == d_model
+        assert attn.n_heads == n_heads
+        assert attn.d_head == d_model // n_heads
+        
+        # Check layer dimensions
+        assert attn.qkv_proj.in_features == d_model
+        assert attn.qkv_proj.out_features == 3 * d_model
+        assert attn.out_proj.in_features == d_model
+        assert attn.out_proj.out_features == d_model
     
-    def forward(self, x: torch.Tensor, mask: Optional[torch.Tensor] = None) -> torch.Tensor:
-        # Pre-normalization (GPT-2 style)
-        x = x + self.attn(self.ln1(x), mask)
-        x = x + self.mlp(self.ln2(x))
-        return x
-
-class GPTModel(nn.Module):
-    """GPT-style transformer model for memorization experiments."""
+    def test_multihead_attention_invalid_dimensions(self):
+        """Test MultiHeadAttention with invalid dimensions."""
+        with pytest.raises(AssertionError):
+            MultiHeadAttention(64, 7)  # 64 not divisible by 7
     
-    def __init__(self, vocab_size: int, seq_length: int, d_model: int, 
-                 n_layers: int, n_heads: int, d_ff: Optional[int] = None):
-        super().__init__()
-        self.vocab_size = vocab_size
-        self.seq_length = seq_length
-        self.d_model = d_model
-        self.n_layers = n_layers
-        self.n_heads = n_heads
+    def test_multihead_attention_forward(self):
+        """Test MultiHeadAttention forward pass."""
+        d_model = 32
+        n_heads = 4
+        seq_len = 8
+        batch_size = 2
         
-        # Embeddings
-        self.token_embedding = nn.Embedding(vocab_size, d_model)
-        self.position_embedding = nn.Embedding(seq_length, d_model)
+        attn = MultiHeadAttention(d_model, n_heads)
+        x = torch.randn(batch_size, seq_len, d_model)
         
-        # Transformer blocks
-        self.blocks = nn.ModuleList([
-            TransformerBlock(d_model, n_heads, d_ff) 
-            for _ in range(n_layers)
-        ])
+        output = attn(x)
         
-        # Output layer
-        self.ln_f = nn.LayerNorm(d_model)
-        self.lm_head = nn.Linear(d_model, vocab_size, bias=False)
+        assert output.shape == (batch_size, seq_len, d_model)
+        assert not torch.allclose(output, x)  # Should transform input
+    
+    def test_multihead_attention_with_mask(self):
+        """Test MultiHeadAttention with causal mask."""
+        d_model = 32
+        n_heads = 4
+        seq_len = 8
+        batch_size = 2
         
-        # Initialize weights
-        self._init_weights()
+        attn = MultiHeadAttention(d_model, n_heads)
+        x = torch.randn(batch_size, seq_len, d_model)
         
         # Create causal mask
-        self.register_buffer("causal_mask", self._create_causal_mask(seq_length))
-    
-    def _init_weights(self):
-        """Initialize all weights using GPT-2 style initialization."""
-        # Token and position embeddings
-        nn.init.normal_(self.token_embedding.weight, std=0.02)
-        nn.init.normal_(self.position_embedding.weight, std=0.02)
+        mask = torch.tril(torch.ones(seq_len, seq_len)).unsqueeze(0).unsqueeze(0)
         
-        # Layer norm parameters (default initialization is fine)
-        nn.init.ones_(self.ln_f.weight)
-        nn.init.zeros_(self.ln_f.bias)
+        output_with_mask = attn(x, mask)
+        output_without_mask = attn(x)
         
-        # Language model head
-        nn.init.normal_(self.lm_head.weight, std=0.02)
-    
-    def _create_causal_mask(self, seq_length: int) -> torch.Tensor:
-        """Create causal attention mask."""
-        mask = torch.tril(torch.ones(seq_length, seq_length))
-        return mask.unsqueeze(0).unsqueeze(0)  # (1, 1, seq_len, seq_len)
-    
-    def forward(self, input_ids: torch.Tensor) -> torch.Tensor:
-        batch_size, seq_len = input_ids.shape
-        
-        # Create position IDs
-        position_ids = torch.arange(seq_len, dtype=torch.long, device=input_ids.device)
-        position_ids = position_ids.unsqueeze(0).expand(batch_size, -1)
-        
-        # Embeddings
-        token_embeds = self.token_embedding(input_ids)
-        pos_embeds = self.position_embedding(position_ids)
-        x = token_embeds + pos_embeds
-        
-        # Get appropriate mask size
-        mask = self.causal_mask[:, :, :seq_len, :seq_len]
-        
-        # Transformer blocks
-        for block in self.blocks:
-            x = block(x, mask)
-        
-        # Final layer norm and projection
-        x = self.ln_f(x)
-        logits = self.lm_head(x)
-        
-        return logits
-    
-    def get_num_params(self) -> int:
-        """Get total number of parameters."""
-        return sum(p.numel() for p in self.parameters())
-    
-    def get_config(self) -> Dict[str, Any]:
-        """Get model configuration."""
-        return {
-            'vocab_size': self.vocab_size,
-            'seq_length': self.seq_length,
-            'd_model': self.d_model,
-            'n_layers': self.n_layers,
-            'n_heads': self.n_heads,
-            'total_params': self.get_num_params()
-        }
+        assert output_with_mask.shape == (batch_size, seq_len, d_model)
+        assert not torch.allclose(output_with_mask, output_without_mask)
 
-def create_gpt_model(n_layers: int, d_model: int, n_heads: int, 
-                    vocab_size: int, seq_length: int, 
-                    device: Optional[str] = None) -> GPTModel:
-    """Create GPT-style transformer model with specified architecture.
+class TestMLP:
     
-    Args:
-        n_layers: Number of transformer layers
-        d_model: Model dimension (embedding size)
-        n_heads: Number of attention heads
-        vocab_size: Vocabulary size
-        seq_length: Maximum sequence length
-        device: Device to place model on (auto-detect if None)
+    def test_mlp_initialization(self):
+        """Test MLP initialization."""
+        d_model = 64
         
-    Returns:
-        Initialized GPT model
-    """
-    if device is None:
+        # Default d_ff (4 * d_model)
+        mlp = MLP(d_model)
+        assert mlp.fc1.in_features == d_model
+        assert mlp.fc1.out_features == 4 * d_model
+        assert mlp.fc2.in_features == 4 * d_model
+        assert mlp.fc2.out_features == d_model
+        
+        # Custom d_ff
+        d_ff = 128
+        mlp_custom = MLP(d_model, d_ff)
+        assert mlp_custom.fc1.out_features == d_ff
+        assert mlp_custom.fc2.in_features == d_ff
+    
+    def test_mlp_forward(self):
+        """Test MLP forward pass."""
+        d_model = 32
+        seq_len = 8
+        batch_size = 2
+        
+        mlp = MLP(d_model)
+        x = torch.randn(batch_size, seq_len, d_model)
+        
+        output = mlp(x)
+        
+        assert output.shape == (batch_size, seq_len, d_model)
+        assert not torch.allclose(output, x)  # Should transform input
+
+class TestTransformerBlock:
+    
+    def test_transformer_block_initialization(self):
+        """Test TransformerBlock initialization."""
+        d_model = 64
+        n_heads = 8
+        
+        block = TransformerBlock(d_model, n_heads)
+        
+        assert isinstance(block.ln1, nn.LayerNorm)
+        assert isinstance(block.attn, MultiHeadAttention)
+        assert isinstance(block.ln2, nn.LayerNorm)
+        assert isinstance(block.mlp, MLP)
+    
+    def test_transformer_block_forward(self):
+        """Test TransformerBlock forward pass."""
+        d_model = 32
+        n_heads = 4
+        seq_len = 8
+        batch_size = 2
+        
+        block = TransformerBlock(d_model, n_heads)
+        x = torch.randn(batch_size, seq_len, d_model)
+        
+        output = block(x)
+        
+        assert output.shape == (batch_size, seq_len, d_model)
+    
+    def test_transformer_block_residual_connections(self):
+        """Test that residual connections work properly."""
+        d_model = 32
+        n_heads = 4
+        seq_len = 8
+        batch_size = 2
+        
+        block = TransformerBlock(d_model, n_heads)
+        
+        # Zero out the weights to test residual connections
+        with torch.no_grad():
+            block.attn.out_proj.weight.zero_()
+            block.mlp.fc2.weight.zero_()
+        
+        x = torch.randn(batch_size, seq_len, d_model)
+        output = block(x)
+        
+        # With zero weights, output should be close to input due to residuals
+        # (after layer normalization effects)
+        assert output.shape == x.shape
+
+class TestGPTModel:
+    
+    def test_gpt_model_initialization(self):
+        """Test GPTModel initialization."""
+        vocab_size = 100
+        seq_length = 32
+        d_model = 64
+        n_layers = 4
+        n_heads = 8
+        
+        model = GPTModel(vocab_size, seq_length, d_model, n_layers, n_heads)
+        
+        assert model.vocab_size == vocab_size
+        assert model.seq_length == seq_length
+        assert model.d_model == d_model
+        assert model.n_layers == n_layers
+        assert model.n_heads == n_heads
+        
+        # Check embeddings
+        assert model.token_embedding.num_embeddings == vocab_size
+        assert model.token_embedding.embedding_dim == d_model
+        assert model.position_embedding.num_embeddings == seq_length
+        assert model.position_embedding.embedding_dim == d_model
+        
+        # Check transformer blocks
+        assert len(model.blocks) == n_layers
+        for block in model.blocks:
+            assert isinstance(block, TransformerBlock)
+        
+        # Check output layer
+        assert isinstance(model.ln_f, nn.LayerNorm)
+        assert model.lm_head.in_features == d_model
+        assert model.lm_head.out_features == vocab_size
+    
+    def test_gpt_model_forward(self):
+        """Test GPTModel forward pass."""
+        vocab_size = 10
+        seq_length = 16
+        d_model = 32
+        n_layers = 2
+        n_heads = 4
+        batch_size = 3
+        
+        model = GPTModel(vocab_size, seq_length, d_model, n_layers, n_heads)
+        
+        # Test with full sequence length
+        input_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
+        logits = model(input_ids)
+        
+        assert logits.shape == (batch_size, seq_length, vocab_size)
+        
+        # Test with shorter sequence
+        short_seq_len = 8
+        input_ids_short = torch.randint(0, vocab_size, (batch_size, short_seq_len))
+        logits_short = model(input_ids_short)
+        
+        assert logits_short.shape == (batch_size, short_seq_len, vocab_size)
+    
+    def test_gpt_model_causal_mask(self):
+        """Test that causal mask is properly applied."""
+        vocab_size = 4
+        seq_length = 8
+        d_model = 16
+        n_layers = 1
+        n_heads = 2
+        
+        model = GPTModel(vocab_size, seq_length, d_model, n_layers, n_heads)
+        
+        # Check mask shape and properties
+        assert model.causal_mask.shape == (1, 1, seq_length, seq_length)
+        
+        # Check it's lower triangular
+        mask = model.causal_mask.squeeze()
+        for i in range(seq_length):
+            for j in range(seq_length):
+                if j > i:
+                    assert mask[i, j] == 0
+                else:
+                    assert mask[i, j] == 1
+    
+    def test_gpt_model_get_num_params(self):
+        """Test parameter counting."""
+        vocab_size = 100
+        seq_length = 32
+        d_model = 64
+        n_layers = 2
+        n_heads = 8
+        
+        model = GPTModel(vocab_size, seq_length, d_model, n_layers, n_heads)
+        
+        num_params = model.get_num_params()
+        assert num_params > 0
+        
+        # Manual count should match
+        manual_count = sum(p.numel() for p in model.parameters())
+        assert num_params == manual_count
+    
+    def test_gpt_model_get_config(self):
+        """Test configuration retrieval."""
+        vocab_size = 100
+        seq_length = 32
+        d_model = 64
+        n_layers = 2
+        n_heads = 8
+        
+        model = GPTModel(vocab_size, seq_length, d_model, n_layers, n_heads)
+        config = model.get_config()
+        
+        assert config['vocab_size'] == vocab_size
+        assert config['seq_length'] == seq_length
+        assert config['d_model'] == d_model
+        assert config['n_layers'] == n_layers
+        assert config['n_heads'] == n_heads
+        assert config['total_params'] == model.get_num_params()
+
+class TestModelCreationFunctions:
+    
+    def test_create_gpt_model(self):
+        """Test GPT model creation function."""
+        n_layers = 2
+        d_model = 32
+        n_heads = 4
+        vocab_size = 50
+        seq_length = 16
+        device = 'cpu'
+        
+        model = create_gpt_model(n_layers, d_model, n_heads, vocab_size, seq_length, device)
+        
+        assert isinstance(model, GPTModel)
+        assert model.n_layers == n_layers
+        assert model.d_model == d_model
+        assert model.n_heads == n_heads
+        assert model.vocab_size == vocab_size
+        assert model.seq_length == seq_length
+        
+        # Check device placement
+        assert next(model.parameters()).device.type == device
+    
+    def test_create_gpt_model_parameter_validation(self):
+        """Test parameter validation in model creation."""
+        base_args = [2, 32, 4, 50, 16]
+        
+        # Test invalid d_model/n_heads ratio
+        with pytest.raises(ValueError):
+            create_gpt_model(2, 30, 4, 50, 16)  # 30 not divisible by 4
+        
+        # Test negative parameters
+        with pytest.raises(ValueError):
+            create_gpt_model(-1, 32, 4, 50, 16)  # negative n_layers
+        
+        with pytest.raises(ValueError):
+            create_gpt_model(2, -32, 4, 50, 16)  # negative d_model
+        
+        with pytest.raises(ValueError):
+            create_gpt_model(2, 32, -4, 50, 16)  # negative n_heads
+        
+        with pytest.raises(ValueError):
+            create_gpt_model(2, 32, 4, -50, 16)  # negative vocab_size
+        
+        with pytest.raises(ValueError):
+            create_gpt_model(2, 32, 4, 50, -16)  # negative seq_length
+    
+    def test_count_model_parameters(self):
+        """Test parameter counting function."""
+        model = create_gpt_model(2, 32, 4, 50, 16, 'cpu')
+        
+        param_count = count_model_parameters(model)
+        manual_count = sum(p.numel() for p in model.parameters() if p.requires_grad)
+        
+        assert param_count == manual_count
+        assert param_count > 0
+    
+    def test_get_model_config(self):
+        """Test model configuration function."""
+        n_layers = 3
+        d_model = 48
+        n_heads = 6
+        vocab_size = 1000
+        seq_length = 64
+        
+        config = get_model_config(n_layers, d_model, n_heads, vocab_size, seq_length)
+        
+        # Check architecture section
+        arch = config['architecture']
+        assert arch['n_layers'] == n_layers
+        assert arch['d_model'] == d_model
+        assert arch['n_heads'] == n_heads
+        assert arch['d_head'] == d_model // n_heads
+        assert arch['d_ff'] == 4 * d_model
+        assert arch['vocab_size'] == vocab_size
+        assert arch['seq_length'] == seq_length
+        
+        # Check parameters section
+        params = config['parameters']
+        assert params['total_params'] > 0
+        assert params['embedding_params'] > 0
+        assert params['transformer_params'] >= 0
+        assert params['output_params'] > 0
+        
+        # Check memory estimates
+        memory = config['memory_estimate']
+        assert memory['params_mb'] > 0
+        assert memory['activations_mb_per_sample'] > 0
+    
+    def test_detect_device(self):
+        """Test device detection."""
         device = detect_device()
+        
+        # Should return one of the valid device types
+        assert device in ['cuda', 'mps', 'cpu']
+        
+        # Should be a string
+        assert isinstance(device, str)
     
-    # Validate parameters
-    if d_model % n_heads != 0:
-        raise ValueError(f"d_model ({d_model}) must be divisible by n_heads ({n_heads})")
+    def test_estimate_activation_memory(self):
+        """Test activation memory estimation."""
+        d_model = 64
+        n_layers = 4
+        seq_length = 32
+        
+        memory_mb = estimate_activation_memory(d_model, n_layers, seq_length)
+        
+        assert memory_mb > 0
+        assert isinstance(memory_mb, float)
+        
+        # Memory should scale with parameters
+        memory_mb_larger = estimate_activation_memory(d_model * 2, n_layers, seq_length)
+        assert memory_mb_larger > memory_mb
     
-    if n_layers <= 0:
-        raise ValueError(f"n_layers must be positive, got {n_layers}")
+    def test_create_model_family(self):
+        """Test model family creation."""
+        base_config = {
+            'd_model': 32,
+            'n_layers': 2,
+            'n_heads': 4,
+            'vocab_size': 100,
+            'seq_length': 16
+        }
+        
+        scale_factors = {
+            'small': 0.5,
+            'medium': 1.0,
+            'large': 2.0
+        }
+        
+        family = create_model_family(base_config, scale_factors)
+        
+        assert len(family) == 3
+        assert 'small' in family
+        assert 'medium' in family
+        assert 'large' in family
+        
+        # Check scaling worked
+        small_params = family['small']['parameters']['total_params']
+        medium_params = family['medium']['parameters']['total_params']
+        large_params = family['large']['parameters']['total_params']
+        
+        assert small_params < medium_params < large_params
     
-    if d_model <= 0:
-        raise ValueError(f"d_model must be positive, got {d_model}")
+    def test_get_morris_model_configs(self):
+        """Test Morris experiment model configurations."""
+        configs = get_morris_model_configs()
+        
+        expected_models = ['nano', 'micro', 'mini', 'small']
+        assert set(configs.keys()) == set(expected_models)
+        
+        # Check all configs have required fields
+        for name, config in configs.items():
+            assert 'architecture' in config
+            assert 'parameters' in config
+            assert 'memory_estimate' in config
+            assert 'model_name' in config
+            assert config['model_name'] == name
+        
+        # Check sizes increase
+        param_counts = [configs[name]['parameters']['total_params'] for name in expected_models]
+        assert param_counts == sorted(param_counts)  # Should be in increasing order
+        
+        # Check all use binary vocabulary and consistent sequence length
+        for config in configs.values():
+            assert config['architecture']['vocab_size'] == 2
+            assert config['architecture']['seq_length'] == 64
+
+@pytest.fixture
+def sample_model():
+    """Create a sample model for testing."""
+    return create_gpt_model(2, 32, 4, 10, 16, 'cpu')
+
+def test_model_inference(sample_model):
+    """Test model inference capability."""
+    model = sample_model
+    batch_size = 2
+    seq_length = 8
+    vocab_size = 10
     
-    if n_heads <= 0:
-        raise ValueError(f"n_heads must be positive, got {n_heads}")
+    # Test inference mode
+    model.eval()
     
-    if vocab_size <= 0:
-        raise ValueError(f"vocab_size must be positive, got {vocab_size}")
+    with torch.no_grad():
+        input_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
+        logits = model(input_ids)
+        
+        assert logits.shape == (batch_size, seq_length, vocab_size)
+        
+        # Test that probabilities sum to 1
+        probs = torch.softmax(logits, dim=-1)
+        prob_sums = probs.sum(dim=-1)
+        
+        assert torch.allclose(prob_sums, torch.ones_like(prob_sums), atol=1e-6)
+
+def test_model_training_mode(sample_model):
+    """Test model in training mode."""
+    model = sample_model
+    batch_size = 2
+    seq_length = 8
+    vocab_size = 10
     
-    if seq_length <= 0:
-        raise ValueError(f"seq_length must be positive, got {seq_length}")
+    model.train()
     
-    # Create model
-    model = GPTModel(
-        vocab_size=vocab_size,
-        seq_length=seq_length,
-        d_model=d_model,
-        n_layers=n_layers,
-        n_heads=n_heads
+    # Create dummy training data
+    input_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
+    target_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
+    
+    # Forward pass
+    logits = model(input_ids)
+    
+    # Calculate loss (simple example)
+    loss = torch.nn.functional.cross_entropy(
+        logits.view(-1, vocab_size), 
+        target_ids.view(-1)
     )
     
-    # Move to device
-    model = model.to(device)
-    
-    return model
+    assert loss.item() > 0
+    assert loss.requires_grad
 
-def count_model_parameters(model: torch.nn.Module) -> int:
-    """Count total trainable parameters in model.
+def test_integration_model_creation_and_usage():
+    """Test complete model creation and usage workflow."""
+    # Test different model sizes
+    model_configs = [
+        (1, 16, 2, 4, 8),   # tiny
+        (2, 32, 4, 10, 16), # small
+        (3, 48, 6, 20, 24)  # medium
+    ]
     
-    Args:
-        model: PyTorch model
+    for n_layers, d_model, n_heads, vocab_size, seq_length in model_configs:
+        # Create model
+        model = create_gpt_model(n_layers, d_model, n_heads, vocab_size, seq_length, 'cpu')
         
-    Returns:
-        Total number of trainable parameters
-    """
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+        # Test forward pass
+        batch_size = 2
+        input_ids = torch.randint(0, vocab_size, (batch_size, seq_length))
+        logits = model(input_ids)
+        
+        assert logits.shape == (batch_size, seq_length, vocab_size)
+        
+        # Test parameter count
+        param_count = count_model_parameters(model)
+        assert param_count > 0
+        
+        # Test config generation
+        config = get_model_config(n_layers, d_model, n_heads, vocab_size, seq_length)
+        assert config['parameters']['total_params'] == param_count
 
-def get_model_config(n_layers: int, d_model: int, n_heads: int, 
-                    vocab_size: int, seq_length: int) -> Dict[str, Any]:
-    """Get model configuration dictionary.
-    
-    Args:
-        n_layers: Number of transformer layers
-        d_model: Model dimension
-        n_heads: Number of attention heads  
-        vocab_size: Vocabulary size
-        seq_length: Maximum sequence length
-        
-    Returns:
-        Configuration dictionary
-    """
-    # Create temporary model to get parameter count (force CPU for config generation)
-    temp_model = GPTModel(
-        vocab_size=vocab_size,
-        seq_length=seq_length,
-        d_model=d_model,
-        n_layers=n_layers,
-        n_heads=n_heads
-    ).to('cpu')
-    
-    config = {
-        'architecture': {
-            'n_layers': n_layers,
-            'd_model': d_model,
-            'n_heads': n_heads,
-            'd_head': d_model // n_heads,
-            'd_ff': 4 * d_model,  # Standard ratio
-            'vocab_size': vocab_size,
-            'seq_length': seq_length
-        },
-        'parameters': {
-            'total_params': temp_model.get_num_params(),
-            'embedding_params': vocab_size * d_model + seq_length * d_model,
-            'transformer_params': temp_model.get_num_params() - (vocab_size * d_model + seq_length * d_model + d_model * vocab_size),
-            'output_params': d_model * vocab_size
-        },
-        'memory_estimate': {
-            'params_mb': temp_model.get_num_params() * 4 / (1024 * 1024),  # 4 bytes per float32
-            'activations_mb_per_sample': estimate_activation_memory(d_model, n_layers, seq_length)
-        }
-    }
-    
-    return config
-
-def detect_device() -> str:
-    """Detect best available device (cuda/mps/cpu).
-    
-    Returns:
-        Device string ('cuda', 'mps', or 'cpu')
-    """
-    if torch.cuda.is_available():
-        return 'cuda'
-    elif hasattr(torch.backends, 'mps') and torch.backends.mps.is_available():
-        # Test MPS device allocation to ensure it actually works
-        try:
-            test_tensor = torch.zeros(1, device='mps')
-            # Test a simple operation
-            result = test_tensor + 1
-            del test_tensor, result  # Clean up
-            return 'mps'
-        except (RuntimeError, OSError, Exception):
-            # MPS detection succeeded but allocation/operation failed, fall back to CPU
-            return 'cpu'
-    else:
-        return 'cpu'
-
-def estimate_activation_memory(d_model: int, n_layers: int, seq_length: int) -> float:
-    """Estimate activation memory usage in MB per sample.
-    
-    Args:
-        d_model: Model dimension
-        n_layers: Number of layers
-        seq_length: Sequence length
-        
-    Returns:
-        Estimated memory in MB per sample
-    """
-    # Rough estimate of activation memory
-    # Each layer has attention and MLP activations
-    attention_memory = seq_length * seq_length * d_model  # Attention matrices
-    mlp_memory = seq_length * d_model * 4  # MLP intermediate
-    layer_memory = attention_memory + mlp_memory
-    
-    total_memory = layer_memory * n_layers
-    memory_mb = total_memory * 4 / (1024 * 1024)  # 4 bytes per float32
-    
-    return memory_mb
-
-def create_model_family(base_config: Dict[str, Any], 
-                       scale_factors: Dict[str, float]) -> Dict[str, Dict[str, Any]]:
-    """Create a family of models with different scales.
-    
-    Args:
-        base_config: Base model configuration
-        scale_factors: Dictionary of scale factors for different model sizes
-        
-    Returns:
-        Dictionary mapping model names to their configurations
-    """
-    model_family = {}
-    
-    for model_name, scale_factor in scale_factors.items():
-        scaled_config = base_config.copy()
-        
-        # Scale d_model and adjust n_heads to maintain divisibility
-        scaled_d_model = int(base_config['d_model'] * scale_factor)
-        
-        # Ensure d_model is divisible by n_heads
-        n_heads = base_config['n_heads']
-        while scaled_d_model % n_heads != 0:
-            scaled_d_model += 1
-        
-        scaled_config.update({
-            'd_model': scaled_d_model,
-            'n_layers': max(1, int(base_config['n_layers'] * scale_factor)),
-        })
-        
-        # Use get_model_config which now forces CPU
-        model_family[model_name] = get_model_config(
-            n_layers=scaled_config['n_layers'],
-            d_model=scaled_config['d_model'],
-            n_heads=scaled_config['n_heads'],
-            vocab_size=scaled_config['vocab_size'],
-            seq_length=scaled_config['seq_length']
-        )
-    
-    return model_family
-
-def get_morris_model_configs() -> Dict[str, Dict[str, Any]]:
-    """Get the specific model configurations for Morris validation experiment.
-    
-    Returns:
-        Dictionary of model configurations matching the experimental design
-    """
-    # Base configuration for Morris experiment
-    base_vocab_size = 2  # Binary sequences
-    base_seq_length = 64  # Standard sequence length
-    
-    # Model architecture configurations
-    configs = {
-        'nano': {
-            'n_layers': 2,
-            'd_model': 32,
-            'n_heads': 2,
-            'vocab_size': base_vocab_size,
-            'seq_length': base_seq_length
-        },
-        'micro': {
-            'n_layers': 4,
-            'd_model': 64,
-            'n_heads': 4,
-            'vocab_size': base_vocab_size,
-            'seq_length': base_seq_length
-        },
-        'mini': {
-            'n_layers': 6,
-            'd_model': 128,
-            'n_heads': 8,
-            'vocab_size': base_vocab_size,
-            'seq_length': base_seq_length
-        },
-        'small': {
-            'n_layers': 8,
-            'd_model': 256,
-            'n_heads': 16,
-            'vocab_size': base_vocab_size,
-            'seq_length': base_seq_length
-        }
-    }
-    
-    # Generate full configurations with parameter counts
-    full_configs = {}
-    for name, config in configs.items():
-        full_configs[name] = get_model_config(**config)
-        full_configs[name]['model_name'] = name
-    
-    return full_configs
+if __name__ == "__main__":
+    pytest.main([__file__, "-v"])

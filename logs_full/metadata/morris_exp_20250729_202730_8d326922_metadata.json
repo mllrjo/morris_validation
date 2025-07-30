@@ -1,0 +1,41 @@
+{
+  "experiment_id": "morris_exp_20250729_202730_8d326922",
+  "timestamp": "2025-07-29T20:27:30.624094",
+  "created_at": 1753835250.6241002,
+  "model": {
+    "name": "micro",
+    "n_layers": 4,
+    "d_model": 64,
+    "n_heads": 4,
+    "vocab_size": 2,
+    "seq_length": 64,
+    "total_params": 202112
+  },
+  "data": {
+    "dataset_size": 1000,
+    "eval_dataset_size": 100,
+    "seq_length": 64,
+    "vocab_size": 2,
+    "seed": 42
+  },
+  "training": {
+    "learning_rate": 0.0005,
+    "batch_size": 32,
+    "max_steps": 1000,
+    "warmup_steps": 100,
+    "weight_decay": 0.01,
+    "grad_clip_norm": 1.0,
+    "device": "mps"
+  },
+  "evaluation": {
+    "eval_interval": 100,
+    "memorization_eval_interval": 200,
+    "save_checkpoint_interval": 500
+  },
+  "experiment": {
+    "seed": 42,
+    "created_time": 1753835250.620126
+  },
+  "parent_experiment_id": "morris_exp_20250729_202633_58bba842",
+  "experiment_number": 5
+}

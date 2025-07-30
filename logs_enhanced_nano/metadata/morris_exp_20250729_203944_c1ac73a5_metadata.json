@@ -1,0 +1,41 @@
+{
+  "experiment_id": "morris_exp_20250729_203944_c1ac73a5",
+  "timestamp": "2025-07-29T20:39:44.191052",
+  "created_at": 1753835984.191058,
+  "model": {
+    "name": "nano",
+    "n_layers": 2,
+    "d_model": 32,
+    "n_heads": 2,
+    "vocab_size": 2,
+    "seq_length": 64,
+    "total_params": 27072
+  },
+  "data": {
+    "dataset_size": 4000,
+    "eval_dataset_size": 500,
+    "seq_length": 64,
+    "vocab_size": 2,
+    "seed": 42
+  },
+  "training": {
+    "learning_rate": 0.002,
+    "batch_size": 16,
+    "max_steps": 5000,
+    "warmup_steps": 200,
+    "weight_decay": 0.005,
+    "grad_clip_norm": 0.5,
+    "device": "mps"
+  },
+  "evaluation": {
+    "eval_interval": 200,
+    "memorization_eval_interval": 500,
+    "save_checkpoint_interval": 1000
+  },
+  "experiment": {
+    "seed": 42,
+    "created_time": 1753835984.1794162
+  },
+  "parent_experiment_id": "morris_exp_20250729_203752_3cce9f16",
+  "experiment_number": 3
+}

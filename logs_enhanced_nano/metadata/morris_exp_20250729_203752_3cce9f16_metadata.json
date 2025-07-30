@@ -1,0 +1,28 @@
+{
+  "experiment_id": "morris_exp_20250729_203752_3cce9f16",
+  "timestamp": "2025-07-29T20:37:52.274617",
+  "created_at": 1753835872.274621,
+  "experiment_name": "deep_dive_nano_nano",
+  "main_experiment_id": "morris_exp_20250729_203752_3cce9f16",
+  "model_names": [
+    "nano"
+  ],
+  "dataset_sizes": [
+    1000,
+    2000,
+    4000
+  ],
+  "total_experiments": 3,
+  "base_config": {
+    "max_steps": 5000,
+    "eval_interval": 200,
+    "memorization_eval_interval": 500,
+    "save_checkpoint_interval": 1000,
+    "learning_rate": 0.002,
+    "warmup_steps": 200,
+    "weight_decay": 0.005,
+    "grad_clip_norm": 0.5,
+    "batch_size": 16,
+    "eval_dataset_size": 500
+  }
+}

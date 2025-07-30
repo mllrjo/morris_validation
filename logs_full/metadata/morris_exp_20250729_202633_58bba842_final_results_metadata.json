@@ -1,0 +1,436 @@
+{
+  "experiment_id": "morris_exp_20250729_202633_58bba842_final_results",
+  "timestamp": "2025-07-29T20:30:38.243320",
+  "created_at": 1753835438.2433338,
+  "experiment_config": {
+    "experiment_name": "complete_morris_validation",
+    "main_experiment_id": "morris_exp_20250729_202633_58bba842",
+    "model_names": [
+      "nano",
+      "micro",
+      "mini"
+    ],
+    "dataset_sizes": [
+      500,
+      1000,
+      2000
+    ],
+    "total_experiments": 9,
+    "base_config": {
+      "max_steps": 1000,
+      "eval_interval": 100,
+      "memorization_eval_interval": 200,
+      "batch_size": 32,
+      "learning_rate": 0.0005,
+      "warmup_steps": 100,
+      "weight_decay": 0.01,
+      "grad_clip_norm": 1.0
+    }
+  },
+  "individual_results": [
+    {
+      "experiment_id": "morris_exp_20250729_202633_812c3010",
+      "model_name": "nano",
+      "dataset_size": 500,
+      "final_step": 1000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6380.275253062185,
+        "morris_memorization_bits": 19.724746937815326,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.000728603240906299,
+        "bits_per_token": 0.003081991709033645,
+        "memorization_fraction": 0.003081991709033645,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202647_5bc54dca",
+      "model_name": "nano",
+      "dataset_size": 1000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6307.3148301971405,
+        "morris_memorization_bits": 92.68516980285949,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.003423654321914136,
+        "bits_per_token": 0.014482057781696795,
+        "memorization_fraction": 0.014482057781696795,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202700_09cb41ce",
+      "model_name": "nano",
+      "dataset_size": 2000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6303.710315986628,
+        "morris_memorization_bits": 96.2896840133717,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.003556799793638139,
+        "bits_per_token": 0.015045263127089328,
+        "memorization_fraction": 0.015045263127089328,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202711_71bdcb92",
+      "model_name": "micro",
+      "dataset_size": 500,
+      "final_step": 1000,
+      "model_config": {
+        "name": "micro",
+        "n_layers": 4,
+        "d_model": 64,
+        "n_heads": 4,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 202112
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6509.947618214344,
+        "morris_memorization_bits": 0.0,
+        "model_parameters": 202112,
+        "bits_per_parameter": 0.0,
+        "bits_per_token": 0.0,
+        "memorization_fraction": 0.0,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202730_8d326922",
+      "model_name": "micro",
+      "dataset_size": 1000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "micro",
+        "n_layers": 4,
+        "d_model": 64,
+        "n_heads": 4,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 202112
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6319.754816885471,
+        "morris_memorization_bits": 80.24518311452903,
+        "model_parameters": 202112,
+        "bits_per_parameter": 0.00039703324451061307,
+        "bits_per_token": 0.01253830986164516,
+        "memorization_fraction": 0.01253830986164516,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202748_ac66800d",
+      "model_name": "micro",
+      "dataset_size": 2000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "micro",
+        "n_layers": 4,
+        "d_model": 64,
+        "n_heads": 4,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 202112
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6304.875131091282,
+        "morris_memorization_bits": 95.12486890871787,
+        "model_parameters": 202112,
+        "bits_per_parameter": 0.0004706542358133999,
+        "bits_per_token": 0.014863260766987168,
+        "memorization_fraction": 0.014863260766987168,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202809_8951fb67",
+      "model_name": "mini",
+      "dataset_size": 500,
+      "final_step": 1000,
+      "model_config": {
+        "name": "mini",
+        "n_layers": 6,
+        "d_model": 128,
+        "n_heads": 8,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 1191680
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6801.1566776846985,
+        "morris_memorization_bits": 0.0,
+        "model_parameters": 1191680,
+        "bits_per_parameter": 0.0,
+        "bits_per_token": 0.0,
+        "memorization_fraction": 0.0,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202852_d831bc56",
+      "model_name": "mini",
+      "dataset_size": 1000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "mini",
+        "n_layers": 6,
+        "d_model": 128,
+        "n_heads": 8,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 1191680
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6334.715975676887,
+        "morris_memorization_bits": 65.28402432311304,
+        "model_parameters": 1191680,
+        "bits_per_parameter": 5.47831836760817e-05,
+        "bits_per_token": 0.010200628800486413,
+        "memorization_fraction": 0.010200628800486413,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_202945_65d1d3b9",
+      "model_name": "mini",
+      "dataset_size": 2000,
+      "final_step": 1000,
+      "model_config": {
+        "name": "mini",
+        "n_layers": 6,
+        "d_model": 128,
+        "n_heads": 8,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 1191680
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 6400.0,
+        "conditional_entropy_bits": 6309.242863030487,
+        "morris_memorization_bits": 90.75713696951334,
+        "model_parameters": 1191680,
+        "bits_per_parameter": 7.61589830906899e-05,
+        "bits_per_token": 0.01418080265148646,
+        "memorization_fraction": 0.01418080265148646,
+        "total_tokens": 6400,
+        "dataset_size": 100,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    }
+  ],
+  "analysis_report": {
+    "summary": {
+      "total_evaluations": 9,
+      "memorization_range": [
+        0.0,
+        96.2896840133717
+      ],
+      "bits_per_param_range": [
+        0.0,
+        0.003556799793638139
+      ],
+      "model_size_range": [
+        27072,
+        1191680
+      ],
+      "average_memorization": 60.012312674435535,
+      "average_bits_per_param": 0.000967520778172151
+    },
+    "model_analysis": {
+      "model_0": {
+        "memorization_bits": 19.724746937815326,
+        "bits_per_parameter": 0.000728603240906299,
+        "memorization_fraction": 0.003081991709033645,
+        "model_parameters": 27072
+      },
+      "model_1": {
+        "memorization_bits": 92.68516980285949,
+        "bits_per_parameter": 0.003423654321914136,
+        "memorization_fraction": 0.014482057781696795,
+        "model_parameters": 27072
+      },
+      "model_2": {
+        "memorization_bits": 96.2896840133717,
+        "bits_per_parameter": 0.003556799793638139,
+        "memorization_fraction": 0.015045263127089328,
+        "model_parameters": 27072
+      },
+      "model_3": {
+        "memorization_bits": 0.0,
+        "bits_per_parameter": 0.0,
+        "memorization_fraction": 0.0,
+        "model_parameters": 202112
+      },
+      "model_4": {
+        "memorization_bits": 80.24518311452903,
+        "bits_per_parameter": 0.00039703324451061307,
+        "memorization_fraction": 0.01253830986164516,
+        "model_parameters": 202112
+      },
+      "model_5": {
+        "memorization_bits": 95.12486890871787,
+        "bits_per_parameter": 0.0004706542358133999,
+        "memorization_fraction": 0.014863260766987168,
+        "model_parameters": 202112
+      },
+      "model_6": {
+        "memorization_bits": 0.0,
+        "bits_per_parameter": 0.0,
+        "memorization_fraction": 0.0,
+        "model_parameters": 1191680
+      },
+      "model_7": {
+        "memorization_bits": 65.28402432311304,
+        "bits_per_parameter": 5.47831836760817e-05,
+        "memorization_fraction": 0.010200628800486413,
+        "model_parameters": 1191680
+      },
+      "model_8": {
+        "memorization_bits": 90.75713696951334,
+        "bits_per_parameter": 7.61589830906899e-05,
+        "memorization_fraction": 0.01418080265148646,
+        "model_parameters": 1191680
+      }
+    },
+    "scaling_analysis": {
+      "scaling_exponent": NaN,
+      "log_intercept": NaN,
+      "theoretical_exponent": 1.0,
+      "morris_3_6_bits_validation": 0.000967520778172151
+    },
+    "validation_results": {
+      "bounds_validation_pass_rate": 0.7777777777777778,
+      "total_evaluations": 9,
+      "passed_validations": 7
+    },
+    "morris_validation": {
+      "scaling_law_validation": {
+        "passes_validation": false,
+        "average_bits_per_param": 0.001243955286221337,
+        "std_bits_per_param": 0.001437213339699611,
+        "target_bits_per_param": 3.6,
+        "tolerance": 0.5,
+        "scaling_exponent": 0.09498193188865088,
+        "r_squared": 0.08033828448846092
+      },
+      "data_points": 9,
+      "valid_data_points": 7,
+      "model_parameters_range": [
+        27072,
+        1191680
+      ],
+      "memorization_range": [
+        19.724746937815326,
+        96.2896840133717
+      ],
+      "efficiency_scores": {
+        "mean": 0.00034554313506148253,
+        "std": 0.00039922592769433646,
+        "individual": [
+          [
+            "nano",
+            0.0002023897891406386
+          ],
+          [
+            "nano",
+            0.0009510150894205934
+          ],
+          [
+            "nano",
+            0.000987999942677261
+          ],
+          [
+            "micro",
+            0.00011028701236405917
+          ],
+          [
+            "micro",
+            0.00013073728772594438
+          ],
+          [
+            "mini",
+            1.5217551021133807e-05
+          ],
+          [
+            "mini",
+            2.1155273080747193e-05
+          ]
+        ]
+      },
+      "power_law_fit": {
+        "exponent": 0.09498193188865088,
+        "intercept": 3.116993857064121,
+        "r_squared": 0.08033828448846092,
+        "expected_exponent": 1.0
+      }
+    }
+  },
+  "summary": {
+    "total_experiments": 9,
+    "successful_experiments": 9,
+    "morris_scaling_validated": false
+  }
+}

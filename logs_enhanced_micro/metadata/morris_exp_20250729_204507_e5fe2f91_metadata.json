@@ -1,0 +1,28 @@
+{
+  "experiment_id": "morris_exp_20250729_204507_e5fe2f91",
+  "timestamp": "2025-07-29T20:45:07.782874",
+  "created_at": 1753836307.782878,
+  "experiment_name": "deep_dive_micro_micro",
+  "main_experiment_id": "morris_exp_20250729_204507_e5fe2f91",
+  "model_names": [
+    "micro"
+  ],
+  "dataset_sizes": [
+    3000,
+    6000,
+    10000
+  ],
+  "total_experiments": 3,
+  "base_config": {
+    "max_steps": 5000,
+    "eval_interval": 200,
+    "memorization_eval_interval": 500,
+    "save_checkpoint_interval": 1000,
+    "learning_rate": 0.002,
+    "warmup_steps": 200,
+    "weight_decay": 0.005,
+    "grad_clip_norm": 0.5,
+    "batch_size": 16,
+    "eval_dataset_size": 500
+  }
+}

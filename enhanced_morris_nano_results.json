@@ -1,0 +1,208 @@
+{
+  "experiment_config": {
+    "experiment_name": "deep_dive_nano_nano",
+    "main_experiment_id": "morris_exp_20250729_203752_3cce9f16",
+    "model_names": [
+      "nano"
+    ],
+    "dataset_sizes": [
+      1000,
+      2000,
+      4000
+    ],
+    "total_experiments": 3,
+    "base_config": {
+      "max_steps": 5000,
+      "eval_interval": 200,
+      "memorization_eval_interval": 500,
+      "save_checkpoint_interval": 1000,
+      "learning_rate": 0.002,
+      "warmup_steps": 200,
+      "weight_decay": 0.005,
+      "grad_clip_norm": 0.5,
+      "batch_size": 16,
+      "eval_dataset_size": 500
+    }
+  },
+  "individual_results": [
+    {
+      "experiment_id": "morris_exp_20250729_203752_5f75d0bb",
+      "model_name": "nano",
+      "dataset_size": 1000,
+      "final_step": 5000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 32000.0,
+        "conditional_entropy_bits": 31593.083390392927,
+        "morris_memorization_bits": 406.91660960707304,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.015030903132648975,
+        "bits_per_token": 0.012716144050221033,
+        "memorization_fraction": 0.012716144050221033,
+        "total_tokens": 32000,
+        "dataset_size": 500,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_203850_d2a440aa",
+      "model_name": "nano",
+      "dataset_size": 2000,
+      "final_step": 5000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 32000.0,
+        "conditional_entropy_bits": 31538.61733789862,
+        "morris_memorization_bits": 461.38266210137954,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.01704279927974954,
+        "bits_per_token": 0.01441820819066811,
+        "memorization_fraction": 0.01441820819066811,
+        "total_tokens": 32000,
+        "dataset_size": 500,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    },
+    {
+      "experiment_id": "morris_exp_20250729_203944_c1ac73a5",
+      "model_name": "nano",
+      "dataset_size": 4000,
+      "final_step": 5000,
+      "model_config": {
+        "name": "nano",
+        "n_layers": 2,
+        "d_model": 32,
+        "n_heads": 2,
+        "vocab_size": 2,
+        "seq_length": 64,
+        "total_params": 27072
+      },
+      "final_memorization": {
+        "theoretical_entropy_bits": 32000.0,
+        "conditional_entropy_bits": 31507.856075186268,
+        "morris_memorization_bits": 492.14392481373216,
+        "model_parameters": 27072,
+        "bits_per_parameter": 0.018179075236913866,
+        "bits_per_token": 0.01537949765042913,
+        "memorization_fraction": 0.01537949765042913,
+        "total_tokens": 32000,
+        "dataset_size": 500,
+        "evaluation_device": "mps"
+      },
+      "training_completed": true
+    }
+  ],
+  "analysis_report": {
+    "summary": {
+      "total_evaluations": 3,
+      "memorization_range": [
+        406.91660960707304,
+        492.14392481373216
+      ],
+      "bits_per_param_range": [
+        0.015030903132648975,
+        0.018179075236913866
+      ],
+      "model_size_range": [
+        27072,
+        27072
+      ],
+      "average_memorization": 453.48106550739493,
+      "average_bits_per_param": 0.016750925883104128
+    },
+    "model_analysis": {
+      "model_0": {
+        "memorization_bits": 406.91660960707304,
+        "bits_per_parameter": 0.015030903132648975,
+        "memorization_fraction": 0.012716144050221033,
+        "model_parameters": 27072
+      },
+      "model_1": {
+        "memorization_bits": 461.38266210137954,
+        "bits_per_parameter": 0.01704279927974954,
+        "memorization_fraction": 0.01441820819066811,
+        "model_parameters": 27072
+      },
+      "model_2": {
+        "memorization_bits": 492.14392481373216,
+        "bits_per_parameter": 0.018179075236913866,
+        "memorization_fraction": 0.01537949765042913,
+        "model_parameters": 27072
+      }
+    },
+    "scaling_analysis": {},
+    "validation_results": {
+      "bounds_validation_pass_rate": 1.0,
+      "total_evaluations": 3,
+      "passed_validations": 3
+    },
+    "morris_validation": {
+      "scaling_law_validation": {
+        "passes_validation": false,
+        "average_bits_per_param": 0.016750925883104128,
+        "std_bits_per_param": 0.0013017013121987462,
+        "target_bits_per_param": 3.6,
+        "tolerance": 0.5,
+        "scaling_exponent": 0.5933355987337655,
+        "r_squared": 0.0
+      },
+      "data_points": 3,
+      "valid_data_points": 3,
+      "model_parameters_range": [
+        27072,
+        27072
+      ],
+      "memorization_range": [
+        406.91660960707304,
+        492.14392481373216
+      ],
+      "efficiency_scores": {
+        "mean": 0.0046530349675289245,
+        "std": 0.0003615836978329851,
+        "individual": [
+          [
+            "nano",
+            0.004175250870180271
+          ],
+          [
+            "nano",
+            0.004734110911041539
+          ],
+          [
+            "nano",
+            0.005049743121364963
+          ]
+        ]
+      },
+      "power_law_fit": {
+        "exponent": 0.5933355987337655,
+        "intercept": 0.05813450511269074,
+        "r_squared": 0.0,
+        "expected_exponent": 1.0
+      }
+    }
+  },
+  "summary": {
+    "total_experiments": 3,
+    "successful_experiments": 3,
+    "morris_scaling_validated": false
+  }
+}

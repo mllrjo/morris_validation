@@ -1,0 +1,41 @@
+{
+  "experiment_id": "morris_exp_20250729_202852_d831bc56",
+  "timestamp": "2025-07-29T20:28:52.646869",
+  "created_at": 1753835332.6468768,
+  "model": {
+    "name": "mini",
+    "n_layers": 6,
+    "d_model": 128,
+    "n_heads": 8,
+    "vocab_size": 2,
+    "seq_length": 64,
+    "total_params": 1191680
+  },
+  "data": {
+    "dataset_size": 1000,
+    "eval_dataset_size": 100,
+    "seq_length": 64,
+    "vocab_size": 2,
+    "seed": 42
+  },
+  "training": {
+    "learning_rate": 0.0005,
+    "batch_size": 32,
+    "max_steps": 1000,
+    "warmup_steps": 100,
+    "weight_decay": 0.01,
+    "grad_clip_norm": 1.0,
+    "device": "mps"
+  },
+  "evaluation": {
+    "eval_interval": 100,
+    "memorization_eval_interval": 200,
+    "save_checkpoint_interval": 500
+  },
+  "experiment": {
+    "seed": 42,
+    "created_time": 1753835332.6423948
+  },
+  "parent_experiment_id": "morris_exp_20250729_202633_58bba842",
+  "experiment_number": 8
+}

@@ -1,26 +1,34 @@
-# run_tests.py
-# Script to run all tests for Morris validation modules
-
+# run_tests.py - Updated version
 import subprocess
 import sys
+import os
 from pathlib import Path
 
 def run_tests():
     """Run all tests and report results."""
-    test_dir = Path(__file__).parent / "tests"
+    project_root = Path(__file__).parent
+    src_path = project_root / "src"
+    test_dir = project_root / "tests"
+    
+    # Add src to Python path
+    env = os.environ.copy()
+    pythonpath = str(src_path)
+    if 'PYTHONPATH' in env:
+        pythonpath = f"{pythonpath}:{env['PYTHONPATH']}"
+    env['PYTHONPATH'] = pythonpath
     
     if not test_dir.exists():
         print("Error: tests directory not found")
         return False
-    # Test files to run
+    
     test_files = [
         "test_logging_utils.py",
-        "test_checkpoint_manager.py",
+        "test_checkpoint_manager.py", 
         "test_data_generation.py",
         "test_model_architecture.py",
         "test_memorization_metrics.py",
         "test_training_loop.py"
-    ]    
+    ]
     
     all_passed = True
     
@@ -37,8 +45,10 @@ def run_tests():
         try:
             result = subprocess.run(
                 [sys.executable, "-m", "pytest", str(test_path), "-v"],
+                env=env,  # Pass the modified environment
                 capture_output=False,
-                check=True
+                check=True,
+                cwd=str(project_root)
             )
         except subprocess.CalledProcessError:
             print(f"FAILED: {test_file}")
